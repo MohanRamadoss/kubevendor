@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+#        image: gcr.io/google-project-name-here/nginx-custom-image
+        image: nginx
+        ports:
+        - containerPort: 80
+        args:
+          - bin/sh
+          - -c
+          - echo $(MY_POD_IP) >/usr/share/nginx/html/index.html; sleep 3600
+        env:
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
